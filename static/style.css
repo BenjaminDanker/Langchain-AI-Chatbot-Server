@@ -789,3 +789,91 @@ text-align: right;
   height: 40px;
   right: 10px;
 }
+
+/* Container that holds the buttons */
+.chatbot__buttons {
+  display: flex;
+  gap: 0.5rem;       /* Reduced spacing between buttons */
+  margin-top: 0.8rem;
+}
+
+/* Common base for all three buttons */
+.btn-copy,
+.btn-like,
+.btn-dislike {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;              /* Space between icon and text */
+  padding: 0.4rem 0.8rem;   /* Reduced padding for smaller buttons */
+  font-size: 0.8rem;        /* Slightly smaller text */
+  font-weight: 500;
+  color: #fff;
+  border: none;
+  border-radius: 20px;      /* Reduced corner radius for a smaller pill shape */
+  cursor: pointer;
+  background: linear-gradient(45deg, #FF5733, #FFC300);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+/* 
+   Animated radial gradient overlay:
+   rotates continuously and shows on hover
+*/
+.btn-copy::before,
+.btn-like::before,
+.btn-dislike::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
+  animation: rotateGradient 2.5s linear infinite;
+  transition: opacity 0.3s ease;
+  opacity: 0;               /* Hidden by default */
+}
+
+/* Reveal the radial gradient overlay on hover */
+.btn-copy:hover::before,
+.btn-like:hover::before,
+.btn-dislike:hover::before {
+  opacity: 1;
+}
+
+/* Rotate the radial gradient in a loop */
+@keyframes rotateGradient {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/* Hover effect: subtle lift and bigger shadow */
+.btn-copy:hover,
+.btn-like:hover,
+.btn-dislike:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Active (pressed) state: flatten and remove shadow */
+.btn-copy:active,
+.btn-like:active,
+.btn-dislike:active {
+  transform: translateY(0) scale(1);
+  box-shadow: none;
+}
+
+/* Icon colors (if needed) */
+.btn-copy i,
+.btn-like i,
+.btn-dislike i {
+  color: #fff;
+}
+}
