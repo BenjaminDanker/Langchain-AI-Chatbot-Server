@@ -602,7 +602,6 @@ function typeWriterEffect(text, chatBody) {
       copyButton.innerHTML = '<i class="fas fa-copy"> ';
       copyButton.addEventListener('click', function() {
         navigator.clipboard.writeText(text);
-        alert('Message copied to clipboard!');
       });
       buttonsContainer.appendChild(copyButton);
       
@@ -612,7 +611,7 @@ function typeWriterEffect(text, chatBody) {
       likeButton.innerHTML = '<i class="fas fa-thumbs-up">';
       likeButton.addEventListener('click', function() {
         // Implement like functionality as needed (e.g., send feedback to the server)
-        alert('You liked the message.');
+        alert('You liked the message.'); // TODO: Replace with actual functionality
       });
       buttonsContainer.appendChild(likeButton);
       
@@ -622,7 +621,7 @@ function typeWriterEffect(text, chatBody) {
       dislikeButton.innerHTML = '<i class="fas fa-thumbs-down">';
       dislikeButton.addEventListener('click', function() {
         // Implement dislike functionality as needed (e.g., send feedback to the server)
-        alert('You disliked the message.');
+        alert('You disliked the message.'); // TODO: Replace with actual functionality
       });
       buttonsContainer.appendChild(dislikeButton);
       
