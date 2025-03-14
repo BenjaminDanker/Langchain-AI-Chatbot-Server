@@ -413,8 +413,11 @@ function addMessage(content, sender) {
 
   const textDiv = document.createElement('div');
   textDiv.className = 'chatbot__text';
+
   if (sender === "bot") {
-    textDiv.innerHTML = replaceLinks(content);
+    
+    textDiv.innerHTML = replaceLinks(content);;  // Converts Markdown to proper HTML
+    
   } else {
     textDiv.textContent = content;
   }
@@ -554,6 +557,7 @@ function toggleLinkText(event, imgElement, link) {
 
 function typeWriterEffect(text, chatBody) {
   const formattedText = replaceLinks(marked.parse(text)); // Convert Markdown to HTML
+
   const plainText = text.replace(/https?:\/\/[^\s]+/g, "");
 
   const messageDiv = document.createElement('div');
