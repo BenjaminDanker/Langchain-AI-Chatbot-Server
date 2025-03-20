@@ -1,0 +1,26 @@
+/* ...existing code... */
+
+/* Updated FAQ Dropdown Styles for a modern, nice appearance */
+.faq-container {
+  border: 2px solid #0078D7;
+  border-radius: 8px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f2f2f2, #ffffff);
+  margin: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.faq-language-dropdown select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Styling for language dropdown remains unchanged */
+/* ...existing code... */

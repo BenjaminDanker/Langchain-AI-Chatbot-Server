@@ -123,12 +123,13 @@
     try {
       const response = await fetch('/api/faqs');
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-      const faqQuestions = await response.json();
-
+      const faqQuestions = await response.json(); // API response (e.g., an array of FAQ strings)
+      
       const faqContainer = document.createElement('div');
       faqContainer.className = 'faq-container';
       faqContainer.id = 'faq-container';
-
+      
+      // Language dropdown at the top of the FAQ section
       const languageDiv = document.createElement('div');
       languageDiv.className = 'faq-language-dropdown';
       languageDiv.innerHTML = `
@@ -145,36 +146,65 @@
           <option value="ko">한국어</option>
           <option value="hi">हिन्दी</option>
           <option value="bn">বাংলা</option>
-        </select>
-      `;
+        </select>`;
+      languageDiv.style.marginBottom = "10px"; // Added spacing between language dropdown and first FAQ dropdown
       faqContainer.appendChild(languageDiv);
-
-      const faqQuestionsContainer = document.createElement('div');
-      faqQuestionsContainer.id = 'faq-questions';
-      const fragment = document.createDocumentFragment();
+      
+      // For each FAQ, create a dropdown (<select> element) where the default option is hidden when dropdown opens.
       faqQuestions.forEach(questionObj => {
         const question = typeof questionObj === 'string' ? questionObj : questionObj.question;
-        const faqDiv = document.createElement('div');
-        faqDiv.className = 'faq-question';
-        faqDiv.addEventListener('click', event => {
-          event.stopPropagation();
-          sendFAQ(question);
+        const selectEl = document.createElement('select');
+        selectEl.className = 'faq-dropdown'; // ensure the class is applied
+
+        // Neumorphic style: soft shadows, 3D "pressed" look
+        selectEl.style.width = "100%";
+        selectEl.style.padding = "12px 16px";
+        selectEl.style.fontSize = "14px";
+        selectEl.style.border = "none";
+        selectEl.style.borderRadius = "10px";
+        selectEl.style.background = "#E0E0E0";
+        selectEl.style.boxShadow = "inset 5px 5px 10pxrgb(255, 254, 254), inset -5px -5px 10pxrgb(48, 48, 48)";
+        selectEl.style.color = "#333";
+        selectEl.style.marginBottom = "12px";
+        selectEl.style.appearance = "none"; // helps override default browser style
+
+        // Custom arrow (dark gray to match #333)
+        selectEl.style.backgroundImage = "url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"><polygon points=\"0,0 10,0 5,5\" fill=\"%23333\"/></svg>')";
+        selectEl.style.backgroundRepeat = "no-repeat";
+        selectEl.style.backgroundPosition = "right 16px center";
+        selectEl.style.backgroundSize = "10px";
+
+        // Default option with the FAQ text, hidden when dropdown opens
+        const defaultOption = document.createElement('option');
+        defaultOption.textContent = question;
+        defaultOption.value = "";
+        defaultOption.setAttribute("hidden", true);
+        defaultOption.setAttribute("selected", true);
+        selectEl.appendChild(defaultOption);
+
+        // Create placeholder options
+        for (let i = 1; i <= 3; i++) {
+          const opt = document.createElement('option');
+          opt.textContent = `Sub-question ${i}`;
+          opt.value = `sub${i}`;
+          selectEl.appendChild(opt);
+        }
+
+        // On change, send the selected sub-question and reset
+        selectEl.addEventListener('change', (event) => {
+          const selectedText = event.target.options[event.target.selectedIndex].text;
+          if (selectedText && selectedText !== question) {
+            sendFAQ(selectedText);
+          }
+          event.target.selectedIndex = 0;
         });
-        const iconDiv = document.createElement('div');
-        iconDiv.className = 'faq-icon';
-        iconDiv.innerHTML = '<i class="fas fa-comment-dots"></i>';
-        faqDiv.appendChild(iconDiv);
-        const textDiv = document.createElement('div');
-        textDiv.className = 'faq-text';
-        textDiv.textContent = question;
-        faqDiv.appendChild(textDiv);
-        fragment.appendChild(faqDiv);
+        
+        faqContainer.appendChild(selectEl);
       });
-      faqQuestionsContainer.appendChild(fragment);
-      faqContainer.appendChild(faqQuestionsContainer);
+      
       chatBody.appendChild(faqContainer);
       scrollToBottom();
-
+      
       // Initialize language dropdown if using Select2
       if (window.$ && typeof $('#faq-language').select2 === 'function') {
         $('#faq-language').select2({
