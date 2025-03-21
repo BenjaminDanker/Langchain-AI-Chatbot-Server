@@ -795,3 +795,66 @@
   transition: background-color 0.3s ease, color 0.3s ease;
   /* Smooth transition */
 }
+
+
+
+/* Neumorphic FAQ Dropdown Styles - */
+.faq-dropdown {
+  background: #feffff;              /* Light grey background */
+  border-radius: 4px;               /* Slightly smaller rounded corners */
+  padding: 8px 12px;                 /* Reduced padding */
+  box-shadow: inset 4px 4px 8px #fffefe, 
+              inset -4px -4px 8px #ffffff; /* Softer neomorphic effect */
+  font-size: 14px;                  /* Slightly smaller text */
+  color: #333;                      /* Text color */
+  transition: background 0.2s ease; /* Smooth transition for hover effect */
+  margin-bottom: 8px;
+}
+
+.faq-dropdown:not(:last-child) {
+  margin-bottom: 8px;
+}
+
+/* Hover effect: darker background, white text */
+.faq-dropdown {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.faq-dropdown:hover {
+  cursor: pointer; /* Show a pointer to indicate clickability */
+  transform: scale(1.02); /* Slightly enlarge */
+  box-shadow: 0 2px 8px rgba(22, 22, 22, 0.2); /* Soft shadow for a 'lifted' look */
+}
+
+
+
+
+
+/* Actual <select> element inside .faq-language-dropdown */
+
+.faq-language-dropdown select {
+  background: #fffefe; /* Light grey background */
+  border-radius: 4px;  /* Slightly smaller rounded corners */
+  padding: 6px 8px;    /* Reduced padding for a smaller box */
+  box-shadow: inset 3px 3px 6px #fffefe,
+              inset -3px -3px 6px #ffffff; /* Softer neomorphic effect */
+  font-size: 12px;     /* Slightly smaller text */
+  color: #333;         /* Text color */
+  margin-bottom: 8px;  /* Space below the dropdown */
+  border: none;        /* Remove default border */
+  
+  /* For a subtle lift on hover */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect: subtle scale + shadow */
+.faq-language-dropdown select:hover {
+  cursor: pointer;
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(22, 22, 22, 0.2);
+}
+
+
+
+
+

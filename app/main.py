@@ -12,10 +12,10 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Startup: initializing chains...")
-    vector_store, cached_embeddings = await initialize_vector_store_azure()
+    #vector_store, cached_embeddings = await initialize_vector_store_azure()
     # Store the vector store for later use
-    app.state.vector_store = vector_store
-    app.state.retrieval_chain_wrapper = await initialize_retrieval_chain_azure(vector_store, cached_embeddings)
+    #app.state.vector_store = vector_store
+    app.state.retrieval_chain_wrapper = await initialize_retrieval_chain_zilliz()
     app.state.translation_chain = await initialize_translation_chain()
     logger.info("Chains stored in app state.")
     yield
