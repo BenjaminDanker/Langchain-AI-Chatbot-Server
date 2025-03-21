@@ -826,10 +826,6 @@
   box-shadow: 0 2px 8px rgba(22, 22, 22, 0.2); /* Soft shadow for a 'lifted' look */
 }
 
-
-
-
-
 /* Actual <select> element inside .faq-language-dropdown */
 
 .faq-language-dropdown select {
@@ -853,6 +849,11 @@
   transform: scale(1.02);
   box-shadow: 0 2px 8px rgba(22, 22, 22, 0.2);
 }
+
+
+
+
+
 
 
 

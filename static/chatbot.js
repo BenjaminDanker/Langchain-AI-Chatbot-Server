@@ -210,31 +210,48 @@
   async function switchFaqLanguage() {
     const langDropdown = document.getElementById("faq-language");
     const selectedLang = langDropdown.value;
+    
+    // Mapping for "Sub-question" translations (default is English)
+    const subQuestionTranslations = {
+      en: "Sub-question",
+      es: "Sub-pregunta",
+      vi: "Câu hỏi phụ",
+      fr: "Sous-question",
+      de: "Unterfrage",
+      zh: "子问题",
+      ja: "サブクエスチョン",
+      ru: "Подвопрос",
+      ar: "سؤال فرعي",
+      ko: "하위 질문",
+      hi: "उप-प्रश्न",
+      bn: "উপ প্রশ্ন"
+    };
+  
     try {
       const response = await fetch(`/api/faqs/translate?lang=${selectedLang}`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const translatedFaqs = await response.json();
-      const faqQuestionsContainer = document.getElementById("faq-questions");
-      faqQuestionsContainer.innerHTML = '';
-      const fragment = document.createDocumentFragment();
-      translatedFaqs.forEach(faq => {
-        const faqDiv = document.createElement('div');
-        faqDiv.className = 'faq-question';
-        faqDiv.addEventListener('click', event => {
-          event.stopPropagation();
-          sendFAQ(faq);
-        });
-        const iconDiv = document.createElement('div');
-        iconDiv.className = 'faq-icon';
-        iconDiv.innerHTML = '<i class="fas fa-comment-dots"></i>';
-        faqDiv.appendChild(iconDiv);
-        const textDiv = document.createElement('div');
-        textDiv.className = 'faq-text';
-        textDiv.textContent = faq;
-        faqDiv.appendChild(textDiv);
-        fragment.appendChild(faqDiv);
-      });
-      faqQuestionsContainer.appendChild(fragment);
+      
+      // Get all dropdowns with the "faq-dropdown" class
+      const faqDropdowns = document.getElementsByClassName("faq-dropdown");
+      if (faqDropdowns.length !== translatedFaqs.length) {
+        console.error("Mismatch: number of dropdowns does not equal number of translated FAQs");
+      }
+      // Update each dropdown:
+      // - Index 0 (default option) gets the translated main FAQ.
+      // - Sub-question options (indexes 1 to end) get updated using the mapping.
+      for (let i = 0; i < faqDropdowns.length; i++) {
+        const dropdown = faqDropdowns[i];
+        // Update default option text:
+        if (dropdown.options.length > 0) {
+          dropdown.options[0].textContent = translatedFaqs[i] || "";
+        }
+        // Update each sub-question option with a translated prefix:
+        for (let j = 1; j < dropdown.options.length; j++) {
+          dropdown.options[j].textContent = `${subQuestionTranslations[selectedLang] || "Sub-question"} ${j}`;
+        }
+      }
+      console.log("FAQ language switched successfully.");
     } catch (error) {
       console.error("Error switching FAQ language:", error);
     }
