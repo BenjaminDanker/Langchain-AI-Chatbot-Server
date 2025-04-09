@@ -45,7 +45,7 @@ img {
   padding: 20px;
 }
 
-.faq-question {
+.Headings-theme .faq-subquestion {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -56,7 +56,7 @@ img {
   transition: all 0.2s ease;
 }
 
-.faq-question:hover {
+.Headings-theme .faq-subquestion:hover {
   background: var(--primary-color);
   transform: translateX(5px);
 }
@@ -74,7 +74,7 @@ img {
 
 /* Left-align specific elements */
 .faq-container,
-.faq-question,
+.Headings-theme .faq-subquestion,
 .chatbot__message--user {
   align-self: flex-start;
   margin-left: 15px;
@@ -801,10 +801,8 @@ img {
   /* Smooth transition */
 }
 
-
-/* FAQ Styles ALONG WITH LANGUAGES */
 /* FAQ Container */
-.faq-container {
+.SubHeadings-theme .faq-container {
   width: fit-content;
   padding: 15px;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
@@ -813,12 +811,11 @@ img {
   margin: 10px 0;
 }
 
-/* Language Dropdown */
-.faq-language-dropdown {
+.SubHeadings-theme .faq-language-dropdown {
   margin-bottom: 15px;
 }
 
-.faq-language-dropdown select {
+.SubHeadings-theme .faq-language-dropdown select {
   width: fit-content;
   padding: 10px;
   font-size: 16px;
@@ -832,30 +829,28 @@ img {
   cursor: pointer;
 }
 
-.faq-language-dropdown select:hover {
+.SubHeadings-theme .faq-language-dropdown select:hover {
   border-color: #010009;
   box-shadow: 0 0 8px rgba(6, 0, 113, 0.2);
 }
 
-.faq-language-dropdown select:focus {
+.SubHeadings-theme .faq-language-dropdown select:focus {
   border-color: #6c63ff;
   box-shadow: 0 0 12px rgba(108, 99, 255, 0.3);
 }
 
-/* FAQ Accordion Item */
-.faq-accordion-item {
+.SubHeadings-theme .faq-accordion-item {
   margin-bottom: 12px;
   border-radius: 10px;
   overflow: hidden;
   transition: transform 0.3s ease;
 }
 
-.faq-accordion-item:hover {
+.SubHeadings-theme .faq-accordion-item:hover {
   transform: translateY(-2px);
 }
 
-/* FAQ Accordion Header */
-.faq-accordion-header {
+.SubHeadings-theme .faq-accordion-header {
   cursor: pointer;
   padding: 15px;
   display: flex;
@@ -870,31 +865,28 @@ img {
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
-.faq-accordion-header:hover {
+.SubHeadings-theme .faq-accordion-header:hover {
   background: linear-gradient(90deg, #253b61 0%, #1f2f4d 100%);
   transform: scale(1.02);
 }
 
-/* FAQ Icon (for headers) */
-.faq-icon {
+.SubHeadings-theme .faq-icon {
   margin-right: 12px;
   font-size: 18px;
   color: #fff;
   transition: transform 0.3s ease;
 }
 
-.faq-accordion-header:hover .faq-icon {
+.SubHeadings-theme .faq-accordion-header:hover .faq-icon {
   transform: rotate(15deg);
 }
 
-/* FAQ Text (for headers) */
-.faq-text {
+.SubHeadings-theme .faq-text {
   flex-grow: 1;
   font-size: 16px;
 }
 
-/* FAQ Accordion Content */
-.faq-accordion-content {
+.SubHeadings-theme .faq-accordion-content {
   padding: 15px 20px;
   background-color: #fff;
   border-radius: 0 0 8px 8px;
@@ -902,7 +894,6 @@ img {
   animation: slideDown 0.3s ease;
 }
 
-/* Slide-down animation for content */
 @keyframes slideDown {
   from {
     opacity: 0;
@@ -914,8 +905,7 @@ img {
   }
 }
 
-/* FAQ Subquestion */
-.faq-subquestion {
+.SubHeadings-theme .faq-subquestion {
   cursor: pointer;
   padding: 12px 15px;
   margin: 8px 0;
@@ -930,42 +920,38 @@ img {
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease, color 0.3s ease;
 }
 
-.faq-subquestion:hover {
+.SubHeadings-theme .faq-subquestion:hover {
   background: linear-gradient(90deg, #000000 0%, #000000 100%);
   transform: translateX(5px);
   box-shadow: 0 4px 12px rgba(108, 99, 255, 0.2);
   color: #fff;
 }
 
-/* FAQ Icon within Subquestion */
-.faq-subquestion .faq-icon {
+.SubHeadings-theme .faq-subquestion .faq-icon {
   margin-right: 12px;
   font-size: 16px;
   color: #1f2f4d;
   transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.faq-subquestion:hover .faq-icon {
+.SubHeadings-theme .faq-subquestion:hover .faq-icon {
   transform: scale(1.1);
   color: #fff;
 }
 
-/* FAQ Text within Subquestion */
-.faq-subquestion .faq-text {
+.SubHeadings-theme .faq-subquestion .faq-text {
   flex-grow: 1;
   font-size: 15px;
 }
 
-/* Accordion Arrow Rotation */
-.rotate-icon i {
+.SubHeadings-theme .rotate-icon i {
   transition: transform 0.3s ease;
 }
 
-/* Loading message */
-.loading-message {
+.SubHeadings-theme .loading-message {
   text-align: center;
   font-style: italic;
-  color: #666;
+  color: #ffffff;
   margin: 10px 0;
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -974,3 +960,10 @@ img {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+
+
+
+
+
+
