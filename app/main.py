@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from contextlib import asynccontextmanager
+from fastapi_proxiedheadersmiddleware import ProxiedHeadersMiddleware
 from app import *
 
 logger = logging.getLogger(__name__)
@@ -28,6 +29,9 @@ async def lifespan(app: FastAPI):
     logger.info("Shutdown: cleaning up resources...")
 
 app = FastAPI(lifespan=lifespan)
+
+# Add middleware to handle proxy headers so that URL generation uses HTTPS
+app.add_middleware(ProxiedHeadersMiddleware)
 
 # origin control
 app.add_middleware(
