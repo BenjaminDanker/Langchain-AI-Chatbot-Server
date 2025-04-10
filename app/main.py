@@ -46,13 +46,24 @@ app.add_middleware(
 @app.middleware("http")
 async def frame_control(request: Request, call_next):
     response: Response = await call_next(request)
+    csp = ""
     # Only allow framing if the request is for the /api/chatbot endpoint
     if request.url.path.startswith("/api/chatbot"):
-        response.headers["Content-Security-Policy"] = "frame-ancestors http://localhost:3000"
+        csp = "frame-ancestors http://localhost:3000; "
     else:
-        response.headers["Content-Security-Policy"] = "frame-ancestors 'none'"
-    return response
+        csp = "frame-ancestors 'none'; "
 
+    # Enforce HTTPS for all resources
+    csp += "default-src https:; "  # Default policy for all resources
+    csp += "script-src https:; "   # Only allow scripts from HTTPS sources
+    csp += "style-src https: 'unsafe-inline'; "  # Only allow styles from HTTPS sources, allow inline styles
+    csp += "img-src https: data:; "     # Only allow images from HTTPS sources and data URIs
+    csp += "media-src https:; "   # Only allow media from HTTPS sources
+    csp += "font-src https:; "    # Only allow fonts from HTTPS sources
+    csp += "connect-src https: wss:;" # Only allow connections to HTTPS and secure websockets
+
+    response.headers["Content-Security-Policy"] = csp
+    return response
 
 # Mount static files
 static_folder = os.path.join(os.path.dirname(__file__), "..", "static")
