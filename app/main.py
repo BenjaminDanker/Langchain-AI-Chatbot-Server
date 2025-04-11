@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request, Response, APIRouter, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from contextlib import asynccontextmanager
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from app import *
 
 logger = logging.getLogger(__name__)
@@ -28,8 +27,6 @@ async def lifespan(app: FastAPI):
     logger.info("Shutdown: cleaning up resources...")
 
 app = FastAPI(lifespan=lifespan)
-
-app.add_middleware(HTTPSRedirectMiddleware)
 
 # Mount static files
 static_folder = os.path.join(os.path.dirname(__file__), "..", "static")
