@@ -15,8 +15,8 @@ async def lifespan(app: FastAPI):
     logger.info("Startup: initializing chains...")
     
     # Initialize Azure Provider
-    #azure_provider = await AzureProvider.create()
-    #app.state.azure_provider = azure_provider
+    azure_provider = await AzureProvider.create()
+    app.state.azure_provider = azure_provider
 
     # Initialize Zilliz Provider
     zilliz_provider = await ZillizProvider.create()
