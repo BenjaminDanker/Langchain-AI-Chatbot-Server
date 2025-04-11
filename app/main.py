@@ -2,11 +2,10 @@ import os
 import uvicorn
 import logging
 from fastapi import FastAPI, Request, Response, APIRouter, Depends
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from contextlib import asynccontextmanager
-from fastapi_proxiedheadersmiddleware import ProxiedHeadersMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 from app import *
 
 logger = logging.getLogger(__name__)
@@ -17,8 +16,8 @@ async def lifespan(app: FastAPI):
     logger.info("Startup: initializing chains...")
     
     # Initialize Azure Provider
-    azure_provider = await AzureProvider.create()
-    app.state.azure_provider = azure_provider
+    #azure_provider = await AzureProvider.create()
+    #app.state.azure_provider = azure_provider
 
     # Initialize Zilliz Provider
     zilliz_provider = await ZillizProvider.create()
@@ -30,40 +29,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-# Add middleware to handle proxy headers so that URL generation uses HTTPS
-app.add_middleware(ProxiedHeadersMiddleware)
-
-# origin control
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# allows framing
-@app.middleware("http")
-async def frame_control(request: Request, call_next):
-    response: Response = await call_next(request)
-    csp = ""
-    # Only allow framing if the request is for the /api/chatbot endpoint
-    if request.url.path.startswith("/api/chatbot"):
-        csp = "frame-ancestors http://localhost:3000; "
-    else:
-        csp = "frame-ancestors 'none'; "
-
-    # Enforce HTTPS for all resources
-    csp += "default-src https:; "  # Default policy for all resources
-    csp += "script-src https:; "   # Only allow scripts from HTTPS sources
-    csp += "style-src https: 'unsafe-inline'; "  # Only allow styles from HTTPS sources, allow inline styles
-    csp += "img-src https: data:; "     # Only allow images from HTTPS sources and data URIs
-    csp += "media-src https:; "   # Only allow media from HTTPS sources
-    csp += "font-src https:; "    # Only allow fonts from HTTPS sources
-    csp += "connect-src https: wss:;" # Only allow connections to HTTPS and secure websockets
-
-    response.headers["Content-Security-Policy"] = csp
-    return response
+app.add_middleware(HTTPSRedirectMiddleware)
 
 # Mount static files
 static_folder = os.path.join(os.path.dirname(__file__), "..", "static")
