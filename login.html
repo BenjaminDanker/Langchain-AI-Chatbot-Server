@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Log In | Shocker Assistant</title>
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+
+  <!-- Login Form -->
+  <div class="auth-container" id="loginForm">
+    <h2>Admin Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email" required />
+    <input type="password" id="loginPassword" placeholder="Password" required />
+    <button onclick="handleLogin()">Login</button>
+    <p style="margin-top: 10px;">
+      <a href="#" onclick="openForgotModal()">Forgot Password?</a>
+    </p>
+    <p>New user? <a href="signup.html">Sign up</a></p>
+  </div>
+
+  <!-- Duo 2FA Simulation -->
+  <div class="auth-container" id="duoStep" style="display:none;">
+    <h2>Duo 2FA Verification</h2>
+    <p>Open Duo Mobile App and approve the login...</p>
+    <div id="duoCountdown">Authenticating in 10s...</div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgotModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeForgotModal()">&times;</span>
+      <h2>Reset Password</h2>
+      <p>Enter your registered email address. We’ll send you reset instructions.</p>
+      <input type="email" id="resetEmail" placeholder="Enter your email" required />
+      <button onclick="sendResetInstructions()">Send Reset Link</button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    function handleLogin() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      const users = JSON.parse(localStorage.getItem("adminUsers") || "[]");
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (!user) return alert("Invalid email or password.");
+
+      if (user.duoEnabled) {
+        document.getElementById("loginForm").style.display = "none";
+        document.getElementById("duoStep").style.display = "block";
+
+        let countdown = 10;
+        const interval = setInterval(() => {
+          document.getElementById("duoCountdown").innerText = `Authenticating in ${countdown--}s...`;
+          if (countdown < 0) {
+            clearInterval(interval);
+            localStorage.setItem("loggedInUser", JSON.stringify(user));
+            window.location.href = "index.html";
+          }
+        }, 1000);
+      } else {
+        localStorage.setItem("loggedInUser", JSON.stringify(user));
+        window.location.href = "index.html";
+      }
+    }
+
+    function openForgotModal() {
+      document.getElementById("forgotModal").style.display = "flex";
+    }
+
+    function closeForgotModal() {
+      document.getElementById("forgotModal").style.display = "none";
+    }
+
+    function sendResetInstructions() {
+      const email = document.getElementById("resetEmail").value.trim();
+      if (!email) return alert("Please enter your email.");
+
+      // Simulate email sent
+      alert("Reset instructions sent to " + email + " (simulated)");
+      closeForgotModal();
+    }
+  </script>
+</body>
+</html>
