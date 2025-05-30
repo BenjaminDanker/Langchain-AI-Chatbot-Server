@@ -18,4 +18,5 @@ __all__ = [
     "chatbot_router",
     "ingest_router",
     "data_delete_router",
+    "login_router",
 ]

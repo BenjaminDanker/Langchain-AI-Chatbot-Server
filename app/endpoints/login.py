@@ -1,47 +1,20 @@
-from fastapi import FastAPI, Request, HTTPException, status
+from fastapi import APIRouter, Request, HTTPException, status
 from fastapi.responses import RedirectResponse, JSONResponse
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
 import msal
-import os
-from dotenv import load_dotenv
+from app.config import settings
+import logging
 
-# Load environment variables
-load_dotenv()
-
-# FastAPI app
-app = FastAPI(title="Admin Dashboard with Azure AD Auth")
-
-# Add session middleware
-app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET_KEY"))
-
-# CORS middleware for frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Azure AD Config
-AZURE_CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
-AZURE_CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
-AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID")
-AUTHORITY = f"https://login.microsoftonline.com/{AZURE_TENANT_ID}"
-SCOPES = ["User.Read"]
-REDIRECT_URIS = {
-    "backend": "http://localhost:5000/auth/callback",
-    "frontend": "http://localhost:3000/auth/callback"
-}
-
+router = APIRouter()
+ 
 # MSAL client
 msal_app = msal.ConfidentialClientApplication(
-    AZURE_CLIENT_ID,
-    authority=AUTHORITY,
-    client_credential=AZURE_CLIENT_SECRET
+   client_id=settings.AZURE_CLIENT_ID,
+   authority=settings.AZURE_AUTHORITY,
+   #settings.AZURE_TENANT_ID,
+   client_credential=settings.AZURE_CLIENT_SECRET
 )
+
 
 # Models
 class Token(BaseModel):
@@ -52,36 +25,58 @@ class ErrorResponse(BaseModel):
     error: str
 
 # Login Route
-@app.get("/auth/login")
-def login():
+@router.get("/auth/login")
+def login(request: Request):
+    next_url = request.query_params.get("next", "/dashboard/admin_dashboard")  # default fallback
+    request.session["next_url"] = next_url
+    # Hardcoded redirect_uri to the callback endpoint
+    redirect_uri = settings.REDIRECT_URIS["backend"]
     auth_url = msal_app.get_authorization_request_url(
-        scopes=SCOPES,
-        redirect_uri=REDIRECT_URIS["backend"]
+        scopes=settings.AZURE_SCOPES,
+        redirect_uri=redirect_uri,
+        prompt="login",
     )
+    logging.info(f"Redirect URL (login): {redirect_uri}")
     return RedirectResponse(auth_url)
 
 # Callback Route
-@app.get("/auth/callback")
+@router.get("/auth/callback")
 async def auth_callback(request: Request):
     code = request.query_params.get("code")
     if not code:
         raise HTTPException(status_code=400, detail="Missing authorization code.")
 
-    result = msal_app.acquire_token_by_authorization_code(
-        code,
-        scopes=SCOPES,
-        redirect_uri=REDIRECT_URIS["backend"]
-    )
+    try:
+        next_url = request.session.get("next_url", "/dashboard/admin_dashboard")
+        # Removed session.clear() to preserve stored data
+        # request.session.clear()  
 
-    if "access_token" in result:
-        request.session["user"] = result.get("id_token_claims")
+        result = msal_app.acquire_token_by_authorization_code(
+            code,
+            settings.AZURE_SCOPES,
+            redirect_uri=settings.REDIRECT_URIS["backend"],
+        )
+        
+        if "access_token" not in result:
+            logging.error(f"Auth failed: {result.get('error_description')}")
+            return JSONResponse(status_code=400, content={"error": result.get("error_description")})
+
+        # Store access token and user info in session
         request.session["access_token"] = result["access_token"]
-        return RedirectResponse(REDIRECT_URIS["frontend"])
-    else:
-        return JSONResponse(status_code=400, content={"error": result.get("error_description")})
+        # Extract user info from the token payload (e.g., 'id_token')
+        # and store it in the session
+        user_info = result.get('id_token_claims', {}) # Assuming id_token_claims has user info
+        request.session["user"] = user_info
 
+        # Redirect to the originally requested URL
+        return RedirectResponse(url=next_url, status_code=status.HTTP_302_FOUND)
+
+    except Exception as e:
+        logging.error(f"Authentication error: {e}")
+        raise HTTPException(status_code=500, detail="Authentication failed.")
+    
 # Protected Route to get user info
-@app.get("/me")
+@router.get("/me")
 async def get_me(request: Request):
     user = request.session.get("user")
     if not user:
@@ -89,8 +84,14 @@ async def get_me(request: Request):
     return {"user": user}
 
 # Logout
-@app.get("/auth/logout")
+@router.post("/auth/logout")
 def logout(request: Request):
     request.session.clear()
-    logout_url = f"{AUTHORITY}/oauth2/v2.0/logout?post_logout_redirect_uri={REDIRECT_URIS['frontend']}"
+    logout_url = f"{settings.AZURE_AUTHORITY}/oauth2/v2.0/logout?post_logout_redirect_uri={settings.DASHBOARD_REDIRECT}"
+
     return RedirectResponse(logout_url)
+
+@router.get("/session_debug")
+def session_debug(request: Request):
+    return {"session": dict(request.session)}
+

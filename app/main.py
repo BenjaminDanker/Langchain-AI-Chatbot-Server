@@ -7,6 +7,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from contextlib import asynccontextmanager
 from app import *
+from fastapi.responses import FileResponse
+from starlette.middleware.sessions import SessionMiddleware
+from app.endpoints import admin
+
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -29,23 +35,43 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=settings.SESSION_SECRET,  # Ensure SESSION_SECRET is set in settings
+    max_age=3600,  # Session expiry in seconds
+    session_cookie="session",
+    same_site="lax",  # Adjust if necessary for your environment
+    https_only=False,  # Set True if using HTTPS
+    path="/"  # Ensure cookie is available for all paths
+)
+
+@app.get("/check-cookies")
+def check_cookies(request: Request):
+    return {"cookies": request.cookies}
+
+# Add this new middleware before CORS middleware
+
+
 # origin control
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # allows framing
+# Middleware to control which origins can frame the app
 @app.middleware("http")
 async def frame_control(request: Request, call_next):
     response: Response = await call_next(request)
     # Only allow framing if the request is for the /api/chatbot endpoint
     if request.url.path.startswith("/api/chatbot"):
+        # Allow framing from http://localhost:3000 for /api/chatbot
         response.headers["Content-Security-Policy"] = "frame-ancestors http://localhost:3000"
     else:
+        # Disallow framing for all other endpoints
         response.headers["Content-Security-Policy"] = "frame-ancestors 'none'"
     return response
 
@@ -53,6 +79,7 @@ async def frame_control(request: Request, call_next):
 # Mount static files
 static_folder = os.path.join(os.path.dirname(__file__), "..", "static")
 app.mount("/static", StaticFiles(directory=static_folder), name="static")
+
 
 # Redirect to /wichita route by default
 @app.get("/")
@@ -75,6 +102,7 @@ def set_zilliz_provider(request: Request):
 # -------------------------------------------------
 # Wichita API: endpoints will be available at /api/...
 wichita_api_router = APIRouter(prefix="/wichita", dependencies=[Depends(set_azure_provider)])
+wichita_api_router.include_router(login_router, prefix="/login")
 wichita_api_router.include_router(chatbot_router, prefix="/api")
 wichita_api_router.include_router(ingest_router, prefix="/api")
 wichita_api_router.include_router(data_delete_router, prefix="/api")
@@ -100,6 +128,7 @@ app.include_router(wichita_router)
 app.include_router(wsu_router)
 app.include_router(wichita_api_router)
 app.include_router(wsu_api_router)
+app.include_router(admin.router, prefix="/dashboard", tags=["admin"])
 
 if __name__ == '__main__':
     uvicorn.run("app.main:app", host="0.0.0.0", port=settings.PORT, reload=False)

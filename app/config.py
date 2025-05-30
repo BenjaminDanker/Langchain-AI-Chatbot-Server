@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from typing import ClassVar
+from typing import ClassVar, List
 
 class Settings(BaseSettings):
     PROVIDER: str = "azure" # azure or zilliz
@@ -71,9 +71,34 @@ class Settings(BaseSettings):
     }
     TEMPLATE: ClassVar[str] = WICHITA_TEMPLATE
 
+    AZURE_CLIENT_ID: str
+    AZURE_CLIENT_SECRET: str
+    AZURE_TENANT_ID: str
+    AZURE_SCOPES: List[str] = ["User.Read"]
+    SESSION_SECRET: str = "supersecretkey"  # default secret for testing; override in production
+
+
+    @property
+    def REDIRECT_URIS(self) -> dict:
+        return {
+            "backend": self.BACKEND_REDIRECT_URI,
+            "frontend": self.FRONTEND_REDIRECT_URI,
+        }
+
+    BACKEND_REDIRECT_URI: str
+    FRONTEND_REDIRECT_URI: str
+    DASHBOARD_REDIRECT: str = "/dashboard/admin_dashboard"
+    LOGIN_REDIRECT: str = "/wichita/login/auth/login"
     class Config:
         env_file = ".env"
         extra = "ignore"
+    @property
+    def AZURE_AUTHORITY(self) -> str:
+        return f"https://login.microsoftonline.com/{self.AZURE_TENANT_ID}"
+
+    @property
+    def AZURE_AD_AUTHORITY(self) -> str:
+        return f"https://login.microsoftonline.com/{self.AZURE_TENANT_ID}"    
 
 
 settings = Settings()

@@ -9,6 +9,7 @@ from .qa import router as qa_router
 from .chatbot import router as chatbot_router
 from .ingest import router as ingest_router
 from .data_delete import router as data_delete_router
+from .login import router as login_router
 
 __all__ = [
     "wichita_router", 
@@ -19,5 +20,6 @@ __all__ = [
     "transcribe_router", 
     "chatbot_router", 
     "ingest_router",
-    "data_delete_router"
+    "data_delete_router",
+    "login_router",
     ]
