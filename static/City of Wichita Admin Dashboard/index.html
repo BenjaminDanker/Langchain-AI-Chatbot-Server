@@ -7,9 +7,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-</head>
+</head> 
 <body>
-
+ 
     <div class="sidebar">
       <img src="https://www.wichita.gov/ImageRepository/Document?documentID=31438" alt="Wichita Logo" class="logo">
       <h2>Admin Panel</h2>
@@ -23,17 +23,19 @@
         <li onclick="showSection('alerts')"><i class="fas fa-bullhorn"></i> Alerts</li>
         <li onclick="showSection('users')"><i class="fas fa-user-cog"></i> Admin Users</li>
         <li onclick="showSection('settings')"><i class="fas fa-tools"></i> Settings</li>
+        
       </ul>
     </div>
     <div class="main-content">
-  
-        <div class="search-bar animated-search">
+
+      <div class="top-bar">
+        <div id="searchBarWrapper" class="search-bar animated-search">
           <input type="text" id="searchInput" placeholder="What can we help you find?" />
           <button type="button" onclick="handleSearch()">
-            <i class="fas fa-search"></i> 
+            <i class="fas fa-search"></i>
           </button>
-         
         </div>
+      
         <div class="styled-dropdown">
           <label for="filterSelect"><i class="fas fa-filter"></i> Filter By:</label>
           <select id="filterSelect" onchange="applyDropdownFilter()">
@@ -45,12 +47,13 @@
             <option value="jobs">Job Queries</option>
           </select>
         </div>
-        
-    
-  
-        <section id="Overview" class="section">
+      </div>
+      
+   
+ 
+        <section id="Overview" class="section active">
           <h1>Overview</h1>
-                  
+                 
           <!-- KPI Cards -->
           <div class="kpi-container">
               <div class="kpi-box">
@@ -67,12 +70,12 @@
               </div>
               <div class="kpi-box">
                   <h3>Pending Requests</h3>
-                  <p>245</p> 
+                  <p>245</p>
               </div>
           </div>
    
          <!-- Charts Section -->
-  <div class="chart-container"> 
+  <div class="chart-container">
       <div class="chart-box">
           <h3><i class="fas fa-chart-bar"></i> Population Growth</h3>
           <canvas id="populationChart"></canvas></div>
@@ -83,11 +86,36 @@
       </div>
   </section>
       <section>
-      <section id="dashboard" class="section active">
+      <section id="dashboard" class="section">
         <h1>Dashboard Analytics</h1>
-        <p>Total chats today: <strong>124</strong></p>
-        <p>Top queries: <strong>Water Bill, Trash Pickup, Job Openings</strong></p>
-        <p>Unanswered: <strong>5</strong></p>
+        <div class="dashboard-tabs">
+          <button onclick="showDashboardTab('engagement')">User Engagement</button>
+          <button onclick="showDashboardTab('sentiment')">Sentiment Analysis</button>
+          <button onclick="showDashboardTab('chatbot')">Chatbot Performance</button>
+          <button onclick="showDashboardTab('system')">System Security</button>
+          <button onclick="showDashboardTab('department')">Department Routing</button>
+        </div>
+        <div id="engagement" class="dashboard-section">
+          <!-- User Engagement Charts go here -->
+        </div>
+        
+        <div id="sentiment" class="dashboard-section" style="display:none;">
+          <!-- Sentiment Analysis Charts go here -->
+        </div>
+        
+        <div id="chatbot" class="dashboard-section" style="display:none;">
+          <!-- Chatbot Performance Charts go here -->
+        </div>
+        
+        <div id="system" class="dashboard-section" style="display:none;">
+          <!-- System and Security Visuals go here -->
+        </div>
+        
+        <div id="department" class="dashboard-section" style="display:none;">
+          <!-- Department Routing Visuals go here -->
+        </div>
+        
+        
       </section>
       <section id="logs" class="section">
         <h1>Chat Logs</h1>
@@ -96,29 +124,7 @@
       </section>
       <section id="departments" class="section">
         <h1>Departments</h1>
-       
-          <!-- KPI Cards -->
-          <div class="kpi-container1">
-              <div class="kpi-box1">
-                  <h3>Police</h3>
-                  
-              </div>
-              <div class="kpi-box1">
-                  <h3>Finance</h3>
-                
-              </div>
-              <div class="kpi-box1">
-                  <h3>Fire</h3>
-                
-              </div>
-              <div class="kpi-box1">
-                  <h3>Airport</h3>
-              </div>
-              <div class="kpi-box1">
-                   <h3>Wichita Transit</h3>
-              </div>
-          </div>
-        
+        <p>[Add/edit/delete city departments]</p>
       </section>
       <section id="faq" class="section">
         <h1>FAQ Manager</h1>
@@ -138,15 +144,24 @@
       </section>
       <section id="settings" class="section">
         <h1>System Settings</h1>
-        <p>[Export data, bot version, backups]</p>
+       
+        <h2>Choose Dashboard Theme</h2>
+        <div class="theme-options">
+          <button class="theme-btn" onclick="setTheme('blue')">Default Theme</button>
+          <button class="theme-btn" onclick="setTheme('teal')">Teal Theme</button>
+          <button class="theme-btn" onclick="setTheme('midnight')">Midnight Theme</button>
+        </div>
+        
+
         <button class="logout-btn" onclick="handleLogout()">
           <i class="fas fa-sign-out-alt"></i> Logout
         </button>
       </section>
-     
-     
+
     </div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
+ 
+ 
