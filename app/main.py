@@ -24,8 +24,8 @@ async def lifespan(app: FastAPI):
     logger.info("Startup: initializing chains...")
     
     # Initialize Azure Provider
-    azure_provider = await AzureProvider.create()
-    app.state.azure_provider = azure_provider
+    #azure_provider = await AzureProvider.create()
+    #app.state.azure_provider = azure_provider
 
     # Initialize Zilliz Provider
     zilliz_provider = await ZillizProvider.create()
@@ -94,20 +94,20 @@ app.mount("/static", StaticFiles(directory=static_folder), name="static")
 # Redirect to /wichita route by default
 @app.get("/")
 async def default_route():
-    return RedirectResponse(url="/wichita")
+    return RedirectResponse(url="/wsu")
 
 # -------------------------------------------------
 # Provider-specific API routers
 # -------------------------------------------------
 # Wichita API: endpoints will be available at /wichita/api/...
-wichita_api_router = APIRouter(prefix="/wichita", dependencies=[Depends(set_azure_provider)])
-wichita_api_router.include_router(chatbot_router, prefix="/api")
-wichita_api_router.include_router(ingest_router, prefix="/api")
-wichita_api_router.include_router(data_delete_router, prefix="/api")
-wichita_api_router.include_router(qa_router, prefix="/api")
-wichita_api_router.include_router(data_search_router, prefix="/api")
-wichita_api_router.include_router(faq_router, prefix="/api")
-wichita_api_router.include_router(transcribe_router, prefix="/api")
+# wichita_api_router = APIRouter(prefix="/wichita", dependencies=[Depends(set_azure_provider)])
+# wichita_api_router.include_router(chatbot_router, prefix="/api")
+# wichita_api_router.include_router(ingest_router, prefix="/api")
+# wichita_api_router.include_router(data_delete_router, prefix="/api")
+# wichita_api_router.include_router(qa_router, prefix="/api")
+# wichita_api_router.include_router(data_search_router, prefix="/api")
+# wichita_api_router.include_router(faq_router, prefix="/api")
+# wichita_api_router.include_router(transcribe_router, prefix="/api")
 
 # WSU API: endpoints will be available at /wsu/api/...
 wsu_api_router = APIRouter(prefix="/wsu", dependencies=[Depends(set_zilliz_provider)])
@@ -124,7 +124,7 @@ wsu_api_router.include_router(transcribe_router, prefix="/api")
 # -------------------------------------------------
 app.include_router(wichita_router)
 app.include_router(wsu_router)
-app.include_router(wichita_api_router)
+#app.include_router(wichita_api_router)
 app.include_router(wsu_api_router)
 
 if __name__ == '__main__':

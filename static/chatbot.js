@@ -16,8 +16,8 @@
   const closeNotification = document.getElementById("close-notification");
 
   // upload document button
-  const uploadBtn = document.getElementById("uploadDocumentButton");
-  const uploadInput = document.getElementById("uploadFileInput");
+  // const uploadBtn = document.getElementById("uploadDocumentButton");
+  // const uploadInput = document.getElementById("uploadFileInput");
 
 
   // Helper function to scroll chat body to the bottom conditionally
@@ -735,6 +735,7 @@
     }
   });
 
+  /*
   uploadBtn.addEventListener("click", () => {
     uploadInput.click();
   });
@@ -783,9 +784,10 @@
       uploadInput.value = "";
     }
   });
+  */
 
   // Get the URL input element
-  const urlInput = document.getElementById("urlInput");
+  // const urlInput = document.getElementById("urlInput");
 
   // Helper function to validate URL
   function isValidUrl(url) {
@@ -797,6 +799,7 @@
     }
   }
 
+  /*
   // Add event listener for keypress on the URL input
   urlInput.addEventListener("keypress", async (event) => {
     if (event.key === "Enter") {
@@ -827,6 +830,7 @@
       urlInput.value = "";
     }
   });
+  */
 
   // Register event listeners once during initialization
   if (recordBtn) recordBtn.addEventListener("click", toggleRecording);
