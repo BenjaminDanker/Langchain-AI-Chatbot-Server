@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+  <script>
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    if (!user) {
+      alert("Please log in first.");
+      window.location.href = "login.html";
+    }
+  </script>
+  
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shocker Assistant - Admin Panel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shocker_dashboard.css" />
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Shockers Logo -->
+    <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/90/Wichita_State_Shockers_logo.svg/800px-Wichita_State_Shockers_logo.svg.png"
+    class="logo"
+    style="width: 120px; display: block; margin: 0 auto 10px;" />
+
+<h2 style="color: #ffcd00; text-align: center;">Shocker Assistant</h2>
+
+<ul>
+    <li onclick="showSection('Overview')"><i class="fas fa-pie-chart"></i> Overview</li>
+    <li onclick="showSection('chatLogs')"><i class="fas fa-comments"></i> Chat Logs</li>
+    <li onclick="showSection('faq')"><i class="fas fa-question-circle"></i> FAQ Manager</li>
+    <li onclick="showSection('departments')"><i class="fas fa-building"></i> Departments</li>
+    <li onclick="showSection('directory')"><i class="fas fa-user-graduate"></i> Directory Integration</li>
+    <li onclick="showSection('events')"><i class="fas fa-calendar-alt"></i> Campus Events</li>
+    <li onclick="showSection('forms')"><i class="fas fa-clipboard-list"></i> Inquiry Forms</li>
+    <li onclick="showSection('alerts')"><i class="fas fa-bullhorn"></i> Alerts & Notices</li>
+    <li onclick="showSection('analytics')"><i class="fas fa-chart-line"></i> Analytics</li>
+    <li onclick="showSection('adminUsers')"><i class="fas fa-user-cog"></i> Admin Users</li>
+
+    <li onclick="showSection('settings')"><i class="fas fa-cogs"></i> Settings</li>
+    <li onclick="showSection('support')"><i class="fas fa-headset"></i> Help & Support</li>
+  </ul>
+  
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Search + Filter -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="What can we help you find?" />
+      <button onclick="handleSearch()"><i class="fas fa-search"></i></button>
+    </div>
+
+    <div class="styled-dropdown">
+      <label for="filterSelect"><i class="fas fa-filter"></i> Filter By:</label>
+      <select id="filterSelect" onchange="applyDropdownFilter()">
+        <option value="all">All</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="financial">Financial Aid</option>
+        <option value="housing">Housing</option>
+      </select>
+    </div>
+<!-- Greeting -->
+<div id="dashboardGreeting" style="font-size: 20px; font-weight: bold; margin-bottom: 20px;"></div>
+
+    <!-- Sections: Injected Here -->
+    <section id="Overview" class="section active">
+      <h1>Overview</h1>
+      <div class="kpi-container">
+        <div class="kpi-box"><h3>Total Students</h3><p>14,567</p></div>
+        <div class="kpi-box"><h3>Chats Today</h3><p>312</p></div>
+        <div class="kpi-box"><h3>Open Tickets</h3><p>28</p></div>
+        <div class="kpi-box"><h3>Resolved FAQs</h3><p>96%</p></div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-box"><h3><i class="fas fa-chart-bar"></i> User Engagement</h3><canvas id="userChart"></canvas></div>
+        <div class="chart-box"><h3><i class="fas fa-pie-chart"></i> FAQ Usage</h3><canvas id="faqChart"></canvas></div>
+      </div>
+    </section>
+
+    <!-- Other section templates will go here like dashboard, logs, etc -->
+    <!-- You can reuse the structure from your previous HTML for each section -->
+    <section id="chatLogs" class="section">
+        <h1><i class="fas fa-comments"></i> Chat Logs</h1>
+      
+        <div class="log-controls">
+          <input type="text" id="chatSearch" placeholder="Search chats by keyword, date, or user..." onkeyup="filterChatLogs()"/>
+          <select id="logFilter" onchange="applyChatFilter()">
+            <option value="all">All</option>
+            <option value="today">Today</option>
+            <option value="unanswered">Unanswered</option>
+            <option value="flagged">Flagged</option>
+          </select>
+          <button onclick="exportChatLogs()" class="export-btn"><i class="fas fa-download"></i> Export</button>
+        </div>
+      
+        <div class="chat-log-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User</th>
+                <th>Query</th>
+                <th>Bot Response</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="chatLogData">
+              <!-- Rows will be dynamically filled -->
+              <tr>
+                <td>2025-05-08 10:21</td>
+                <td>Student_1021</td>
+                <td>“How do I apply for scholarships?”</td>
+                <td>“You can visit the WSU financial aid portal here...”</td>
+                <td><span class="status-tag resolved">Resolved</span></td>
+                <td><button onclick="toggleFlag(this)" class="flag-btn">🚩 Flag</button></td>
+
+              </tr>
+              <tr>
+                <td>2025-05-08 10:19</td>
+                <td>Student_1008</td>
+                <td>“Where is the bookstore?”</td>
+                <td>“Sorry, I didn’t understand that.”</td>
+                <td><span class="status-tag unanswered">Unanswered</span></td>
+                
+                <td><button onclick="toggleFlag(this)" class="flag-btn">🚩 Flag</button></td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <!--faqs-->
+
+      <section id="faq" class="section">
+        <h1><i class="fas fa-question-circle"></i> FAQ Manager</h1>
+      
+        <!-- Controls -->
+        <div class="faq-controls">
+          <input type="text" id="faqSearch" placeholder="Search FAQs..." onkeyup="filterFAQs()" />
+          <select id="faqCategoryFilter" onchange="filterFAQs()">
+            <option value="all">All Topics</option>
+            <option value="Admissions">Admissions</option>
+            <option value="Financial Aid">Financial Aid</option>
+            <option value="Housing">Housing</option>
+            <option value="Courses">Courses</option>
+          </select>
+          <button onclick="openAddFAQModal()" class="add-faq-btn">
+            <i class="fas fa-plus-circle"></i> Add FAQ
+          </button>
+        </div>
+      
+        <!-- FAQ List -->
+        <div id="faqList" class="faq-list">
+          <!-- FAQs will be dynamically rendered here -->
+          <div class="faq-card" data-topic="Admissions">
+            <h3>How do I apply to WSU?</h3>
+            <p>You can apply through our admissions portal at https://wichita.edu/apply</p>
+            <span class="faq-topic">Admissions</span>
+            <div class="faq-actions">
+              <button onclick="editFAQ(this)">✏️ Edit</button>
+              <button onclick="deleteFAQ(this)">🗑️ Delete</button>
+            </div>
+          </div>
+      
+          <div class="faq-card" data-topic="Financial Aid">
+            <h3>How do I apply for scholarships?</h3>
+            <p>You can apply for scholarships through the WSU Financial Aid portal.</p>
+            <span class="faq-topic">Financial Aid</span>
+            <div class="faq-actions">
+              <button onclick="editFAQ(this)">✏️ Edit</button>
+              <button onclick="deleteFAQ(this)">🗑️ Delete</button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Add/Edit FAQ Modal -->
+        <div id="faqModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeFAQModal()">&times;</span>
+            <h2 id="faqModalTitle">Add FAQ</h2>
+            <input type="text" id="faqQuestion" placeholder="Enter question..." />
+            <textarea id="faqAnswer" placeholder="Enter answer..."></textarea>
+            <select id="faqTopic">
+              <option value="">Select Topic</option>
+              <option value="Admissions">Admissions</option>
+              <option value="Financial Aid">Financial Aid</option>
+              <option value="Housing">Housing</option>
+              <option value="Courses">Courses</option>
+            </select>
+            <button onclick="saveFAQ()">Save</button>
+          </div>
+        </div>
+      </section>
+      <!--departments-->
+      <section id="departments" class="section">
+        <h1><i class="fas fa-building"></i> Departments</h1>
+      
+        <!-- Controls -->
+        <div class="dept-actions">
+          <input type="text" id="searchDepartment" placeholder="Search departments..." onkeyup="filterDepartments()" />
+          <button onclick="openDepartmentModal()">+ Add Department</button>
+        </div>
+      
+        <!-- Department List -->
+        <ul id="departmentList" class="department-list">
+          <!-- Cards are dynamically added here -->
+          <li class="department-card" data-tags="student,admissions">
+            <div class="dept-left">
+              <span class="dept-icon"><i class="fas fa-user-graduate"></i></span>
+              <span class="dept-name">Admissions</span>
+              <span class="dept-tags">Student Services</span>
+            </div>
+            <div class="dept-right">
+              <span class="dept-contact">📧 admissions@wichita.edu</span>
+              <span class="dept-phone">📞 (316) 978-3085</span>
+              <button onclick="editDepartment(this)">✏️ Edit</button>
+              <button onclick="deleteDepartment(this)">🗑️ Delete</button>
+            </div>
+          </li>
+        </ul>
+      
+        <!-- Department Modal -->
+        <div id="departmentModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeDepartmentModal()">&times;</span>
+            <h2 id="deptModalTitle">Add Department</h2>
+            <input type="text" id="deptNameInput" placeholder="Department Name" />
+            <input type="text" id="deptEmailInput" placeholder="Contact Email" />
+            <input type="text" id="deptPhoneInput" placeholder="Phone Number" />
+            <input type="text" id="deptTagsInput" placeholder="Tags (e.g. Student, Finance)" />
+            <button onclick="saveDepartment()">Save</button>
+          </div>
+        </div>
+      </section>
+      <!--directory-->
+      <section id="directory" class="section">
+        <h1><i class="fas fa-user-graduate"></i> Directory Integration</h1>
+      
+        <!-- Controls -->
+        <div class="directory-controls">
+          <input type="text" id="directorySearch" placeholder="Search by name, title, or department..." onkeyup="filterDirectory()" />
+          <button onclick="openDirectoryModal()" class="add-directory-btn">
+            <i class="fas fa-user-plus"></i> Add Person
+          </button>
+        </div>
+      
+        <!-- Directory List -->
+        <div id="directoryList" class="directory-list">
+          <div class="directory-card" data-status="Active" data-tags="professor engineering">
+            <h3>Dr. Jane Smith</h3>
+            <p><strong>Title:</strong> Professor of Electrical Engineering</p>
+            <p><strong>Department:</strong> Engineering & Applied Sciences</p>
+            <p><strong>Email:</strong> jane.smith@wichita.edu</p>
+            <p><strong>Phone:</strong> (316) 978-1234</p>
+            <p><strong>Office Hours:</strong> MWF 10:00–12:00</p>
+            <span class="directory-tag">Professor</span>
+            <span class="status active">🟢 Active</span>
+            <div class="directory-actions">
+              <button onclick="editDirectory(this)">✏️ Edit</button>
+              <button onclick="deleteDirectory(this)">🗑️ Delete</button>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Modal -->
+        <div id="directoryModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeDirectoryModal()">&times;</span>
+            <h2 id="directoryModalTitle">Add Person</h2>
+            <input type="text" id="dirName" placeholder="Full Name" />
+            <input type="text" id="dirTitle" placeholder="Job Title" />
+            <input type="text" id="dirDept" placeholder="Department" />
+            <input type="email" id="dirEmail" placeholder="Email Address" />
+            <input type="text" id="dirPhone" placeholder="Phone Number" />
+            <input type="text" id="dirHours" placeholder="Office Hours" />
+            <input type="text" id="dirTags" placeholder="Tags (e.g. Professor, Advisor)" />
+            <select id="dirStatus">
+              <option value="Active">Active</option>
+              <option value="On Leave">On Leave</option>
+            </select>
+            <button onclick="saveDirectory()">Save</button>
+            <label class="visibility-toggle">
+                <input type="checkbox" id="dirVisibleToBot" checked />
+                Show in Chatbot
+              </label>
+              
+          </div>
+          
+        </div>
+      </section>
+      <!--events-->
+      <section id="events" class="section">
+        <h1><i class="fas fa-calendar-alt"></i> Campus Events</h1>
+      
+        <!-- Controls -->
+        <div class="event-controls">
+          <input type="text" id="eventSearch" placeholder="Search events by name, type, or location..." onkeyup="filterEvents()" />
+          <button onclick="openEventModal()" class="add-event-btn">
+            <i class="fas fa-plus-circle"></i> Add Event
+          </button>
+        </div>
+      
+        <!-- Event List -->
+        <div id="eventList" class="event-list">
+          <!-- Event cards will be added here -->
+        </div>
+      
+        <!-- Modal -->
+        <div id="eventModal" class="modal">
+          <div class="modal-content">
+            <span class="close" onclick="closeEventModal()">&times;</span>
+            <h2 id="eventModalTitle">Add Event</h2>
+            <input type="text" id="eventTitle" placeholder="Event Title" />
+            <input type="text" id="eventType" placeholder="Type (Workshop, Seminar, etc.)" />
+            <input type="text" id="eventLocation" placeholder="Location" />
+            <input type="datetime-local" id="eventDateTime" />
+            <textarea id="eventDescription" placeholder="Event Description"></textarea>
+            <label>
+              <input type="checkbox" id="eventFeatured" /> Mark as Featured
+            </label>
+            <label>
+              <input type="checkbox" id="eventPublic" checked /> Show in Chatbot
+            </label>
+            <button onclick="saveEvent()">Save</button>
+          </div>
+        </div>
+      </section>
+      
+    <!--INQUIRY FORMS-->
+    <section id="forms" class="section">
+      <h1><i class="fas fa-file-alt"></i> Inquiry Forms</h1>
+    
+      <div class="inquiry-controls">
+        <input type="text" id="inquirySearch" placeholder="Search by name, WSU ID or tags..." onkeyup="filterInquiries()" />
+        <select id="inquiryTopicFilter" onchange="filterInquiries()">
+          <option value="all">All Topics</option>
+          <option value="Admissions">Admissions</option>
+          <option value="Housing">Housing</option>
+          <option value="Financial Aid">Financial Aid</option>
+          <option value="Technical">Technical</option>
+        </select>
+        <button onclick="openInquiryModal()" class="add-inquiry-btn">
+          <i class="fas fa-plus-circle"></i> Add Inquiry
+        </button>
+      </div>
+    
+      <div id="inquiryList" class="inquiry-list"></div>
+    
+      <!-- Modal -->
+      <div id="inquiryModal" class="modal">
+        <div class="modal-content">
+          <span class="close" onclick="closeInquiryModal()">&times;</span>
+          <h2 id="inquiryModalTitle">Add Inquiry</h2>
+          <input type="text" id="inqName" placeholder="Student Name" />
+          <input type="text" id="inqWSUID" placeholder="WSU ID" />
+          <select id="inqTopic">
+            <option value="">Select Topic</option>
+            <option value="Admissions">Admissions</option>
+            <option value="Housing">Housing</option>
+            <option value="Financial Aid">Financial Aid</option>
+            <option value="Technical">Technical</option>
+          </select>
+          <textarea id="inqMessage" placeholder="Inquiry Message"></textarea>
+          <input type="text" id="inqTags" placeholder="Tags (comma separated)" />
+          <button onclick="saveInquiry()">Save</button>
+        </div>
+      </div>
+    </section>
+    <!-- ================================
+      ALERTS & NOTICES
+=================================== -->
+<section id="alerts" class="section">
+  <h1><i class="fas fa-bullhorn"></i> Alerts & Notices</h1>
+
+  <!-- 🔧 Alert Controls -->
+  <div class="alert-controls">
+    <input type="text" id="alertTitle" placeholder="Enter alert title..." />
+    <textarea id="alertMessage" placeholder="Enter alert message..."></textarea>
+    <button onclick="postAlert()">Post Alert</button>
+  </div>
+
+  <!-- 📋 Alert List -->
+  <div id="alertList" class="alert-list"></div>
+</section>
+<!-- ================================
+     📊 MODULE: ANALYTICS
+=================================== -->
+<section id="analytics" class="section">
+  <h1><i class="fas fa-chart-line"></i> Analytics</h1>
+
+  <!-- KPIs -->
+  <div class="kpi-container">
+    <div class="kpi-box"><h3>Daily Chats</h3><p id="dailyChats">312</p></div>
+    <div class="kpi-box"><h3>Unanswered</h3><p id="unansweredCount">7</p></div>
+    <div class="kpi-box"><h3>FAQs Used</h3><p id="faqCount">136</p></div>
+  </div>
+
+  <!-- Charts -->
+  <div class="chart-container">
+    <div class="chart-box">
+      <h3><i class="fas fa-chart-bar"></i> Weekly Engagement</h3>
+      <canvas id="engagementChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3><i class="fas fa-pie-chart"></i> FAQ Topic Distribution</h3>
+      <canvas id="topicChart"></canvas>
+    </div>
+  </div>
+</section>
+<!-- ================================
+     👥 MODULE: ADMIN USERS
+=================================== -->
+<section id="adminUsers" class="section">
+  <h1><i class="fas fa-user-cog"></i> Admin Users</h1>
+
+  <!-- 🛠 Controls -->
+  <div class="admin-controls">
+    <input type="text" id="adminName" placeholder="Admin Name" />
+    <input type="email" id="adminEmail" placeholder="Admin Email" />
+    <select id="adminRole">
+      <option value="Moderator">Moderator</option>
+      <option value="Editor">Editor</option>
+      <option value="SuperAdmin">SuperAdmin</option>
+    </select>
+    <button onclick="addAdmin()">Add Admin</button>
+  </div>
+
+  <!-- 📋 Admin List -->
+  <div id="adminList" class="admin-list"></div>
+</section>
+<!-- ⚙️ SETTINGS MODULE -->
+<section id="settings" class="section active">
+  <h1><i class="fas fa-cogs"></i> Settings</h1>
+
+  <!-- Profile -->
+  <div class="settings-group">
+    <h3><i class="fas fa-user"></i> Profile</h3>
+    <input type="text" id="profileName" placeholder="Name" />
+    <input type="email" id="profileEmail" placeholder="Email" />
+    <button onclick="saveProfile()">Save Profile</button>
+  </div>
+
+  <!-- Theme -->
+  <div class="settings-group">
+    <h3><i class="fas fa-adjust"></i> Theme</h3>
+    <label class="switch">
+      <input type="checkbox" id="themeToggle">
+      <span class="slider round"></span>
+    </label>
+    <span id="themeLabel">Light Mode</span>
+  </div>
+
+  <!-- Privacy -->
+  <div class="settings-group">
+    <h3><i class="fas fa-user-shield"></i> Privacy</h3>
+    <label><input type="checkbox" id="privacyBlur" /> Blur UI on Idle</label>
+  </div>
+
+  <!-- Layout -->
+  <div class="settings-group">
+    <h3><i class="fas fa-th-large"></i> Layout</h3>
+    <label><input type="checkbox" id="compactMode" /> Enable Compact Mode</label>
+  </div>
+
+  <!-- Developer -->
+  <div class="settings-group">
+    <h3><i class="fas fa-code"></i> Developer Tools</h3>
+    <label><input type="checkbox" id="devMode" /> Show Debug Banner</label>
+  </div>
+
+  <!-- Feedback -->
+  <div class="settings-group">
+    <h3><i class="fas fa-comment-dots"></i> Feedback</h3>
+    <textarea id="feedbackText" placeholder="Your feedback..."></textarea>
+    <button onclick="submitFeedback()">Submit Feedback</button>
+  </div>
+
+  
+  <!-- 🔑 Change Password -->
+<div class="settings-group">
+  <h3><i class="fas fa-key"></i> Change Password</h3>
+  <input type="password" id="currentPassword" placeholder="Current Password" />
+  <input type="password" id="newPassword" placeholder="New Password" />
+  <input type="password" id="confirmPassword" placeholder="Confirm New Password" />
+  <button onclick="changePassword()">Change Password</button>
+</div>
+<!-- Logout -->
+<button class="logout-btn" onclick="handleLogout()">
+  <i class="fas fa-sign-out-alt"></i> Logout
+</button>
+
+
+</section>
+
+<!-- 🎧 HELP & SUPPORT MODULE -->
+<section id="support" class="section">
+  <h1><i class="fas fa-headset"></i> Help & Support</h1>
+
+  <!-- Contact Information -->
+  <div class="settings-group">
+    <h3><i class="fas fa-envelope"></i> Contact Information</h3>
+    <p><strong>Email:</strong> <a href="mailto:support@shockerassistant.com">support@shockerassistant.com</a></p>
+    <p><strong>Phone:</strong> +1 (316) 978-4357</p>
+    <p><strong>Office Hours:</strong> Mon–Fri, 9 AM to 5 PM</p>
+  </div>
+
+  <!-- Submit a Request -->
+  <div class="settings-group">
+    <h3><i class="fas fa-paper-plane"></i> Submit a Help Request</h3>
+    <input type="text" id="supportName" placeholder="Your Name" />
+    <input type="email" id="supportEmail" placeholder="Your Email" />
+    <textarea id="supportMessage" placeholder="Describe your issue..."></textarea>
+    <button onclick="submitSupport()">Submit Request</button>
+  </div>
+</section>
+
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="shocker_dashboard.js"></script>
+</body>
+</html>
